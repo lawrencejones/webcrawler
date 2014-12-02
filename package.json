@@ -22,5 +22,15 @@
   "bugs": {
     "url": "https://github.com/LawrenceJones/webcrawler/issues"
   },
-  "homepage": "https://github.com/LawrenceJones/webcrawler"
+  "homepage": "https://github.com/LawrenceJones/webcrawler",
+  "dependencies": {
+    "bluebird": "^2.3.11",
+    "chai": "^1.10.0",
+    "commander": "^2.5.0",
+    "expect": "^1.0.2",
+    "jquery": "^2.1.1",
+    "mocha": "^2.0.1",
+    "request": "^2.49.0",
+    "winston": "^0.8.3"
+  }
 }

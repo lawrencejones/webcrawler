@@ -48,12 +48,12 @@ class HTMLPage
 
   # Parses the page to produce an array of all links contained within any
   # elements.
-  parseLinks: ($ = @_$) ->
+  parseLinks: ->
 
     links = []
 
     for own tag, attr of HTMLPage.LINKED_ELEMENTS
-      $(tag).map -> links.push(@attribs[attr])
+      @_$(tag).map -> links.push(@attribs[attr])
 
     _.compact(_.unique(links)).map(url.resolve.bind(null, @url))
 

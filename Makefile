@@ -3,7 +3,7 @@ CS_FLAGS := --compile --bare
 
 MOCHA := ./node_modules/mocha/bin/mocha
 
-.PHONY: test
+.PHONY: test set-integ
 test:
 	$(MOCHA) ./test/spec_helper.coffee \
 		--recursive ./test \
@@ -12,3 +12,7 @@ test:
 		--reporter spec \
 		--colors \
 		--watch
+
+integ:
+	$(MAKE) INTEG=true test
+

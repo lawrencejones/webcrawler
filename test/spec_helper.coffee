@@ -12,6 +12,8 @@ integ = ->
   it.apply(this, arguments) if process.env['INTEG']
 
 exports = {
+  fs: require('fs')
+  path: require('path')
   _: require('underscore')
   P: require('bluebird')
   expect: chai.expect

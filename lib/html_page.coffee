@@ -1,4 +1,6 @@
+_ = require('underscore')
 P = require('bluebird')
+url = require('url')
 request = P.promisify(require('request'))
 cheerio = require('cheerio')
 
@@ -6,16 +8,23 @@ cheerio = require('cheerio')
 
 class HTMLPage
 
-  # Constructs new HTMLPage and initiates parsing.
+  @LINKED_ELEMENTS: {
+    'a': 'href'
+    'script': 'src'
+    'link': 'href'
+    'img': 'src'
+  }
+
+  # Constructs new HTMLPage.
   #
   # params {Object} {
   #   url {String} url of page request
-  #   $ {jQuery Context} a jquery handle for page content
+  #   body {String} body of response
   # }
   #
-  constructor: ({ @url, $: @_$ }) ->
+  constructor: ({ @url, body }) ->
     logger.debug "Parsing webpage: #{@url}..."
-    @parseLinks()
+    @_$ = cheerio.load(body ? '')
 
   # Requests page from given url, jquerifying the body.
   #
@@ -35,11 +44,17 @@ class HTMLPage
       unless statusCode is 200
         throw new Error("Request failed [#{statusCode}]")
 
-      new HTMLPage {
-        url: url
-        $: cheerio.load(body)
-      }
+      new HTMLPage { url, body }
 
-  parseLinks: ->
+  # Parses the page to produce an array of all links contained within any
+  # elements.
+  parseLinks: ($ = @_$) ->
+
+    links = []
+
+    for own tag, attr of HTMLPage.LINKED_ELEMENTS
+      $(tag).map -> links.push(@attribs[attr])
+
+    _.compact(_.unique(links)).map(url.resolve.bind(null, @url))
 
 module.exports = { HTMLPage }

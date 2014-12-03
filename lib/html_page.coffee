@@ -8,23 +8,15 @@ cheerio = require('cheerio')
 
 class HTMLPage
 
-  @LINKED_ELEMENTS: {
-    'a': 'href'
+  @STATIC_ELEMENTS: {
     'script': 'src'
     'link': 'href'
     'img': 'src'
   }
 
-  # Constructs new HTMLPage.
-  #
-  # params {Object} {
-  #   url {String} url of page request
-  #   body {String} body of response
-  # }
-  #
-  constructor: ({ @url, body }) ->
-    logger.debug "Parsing webpage: #{@url}..."
-    @_$ = cheerio.load(body ? '')
+  @LINK_ELEMENTS: {
+    'a': 'href'
+  }
 
   # Requests page from given url, jquerifying the body.
   #
@@ -46,15 +38,55 @@ class HTMLPage
 
       new HTMLPage { url, body }
 
-  # Parses the page to produce an array of all links contained within any
-  # elements.
+  # Constructs new HTMLPage.
+  #
+  # params {Object} {
+  #   url {String} url of page request
+  #   body {String} body of response
+  # }
+  #
+  constructor: ({ @url, body }) ->
+    logger.debug "Parsing webpage: #{@url}..."
+    @_$ = cheerio.load(body ? '')
+
+  # Parses the page to produce an array of all links to other pages.
   parseLinks: ->
+    @parseElementAttributes(HTMLPage.LINK_ELEMENTS, @resolveLink.bind(@))
 
-    links = []
+  # Parses page to find all static resources used.
+  parseStaticAssets: ->
+    @parseElementAttributes(HTMLPage.STATIC_ELEMENTS, @resolveLink.bind(@))
 
-    for own tag, attr of HTMLPage.LINKED_ELEMENTS
-      @_$(tag).map -> links.push(@attribs[attr])
+  # Given a mapping of tag to attribute, will extract from all found tags
+  # the value of the set attribute.
+  #
+  #   TAG_ATTRIBUTES {Object} tag:attr pairs
+  #   transform {Function|Null} optional function to map over attributes
+  #
+  # Returns array of all discovered attribute values.
+  parseElementAttributes: (TAG_ATTRIBUTES, transform) ->
 
-    _.compact(_.unique(links)).map(url.resolve.bind(null, @url))
+    attributes = []
+
+    for own tag, attr of TAG_ATTRIBUTES
+      @_$(tag).map -> attributes.push(@attribs[attr]) if @attribs[attr]
+
+    if 'function' is typeof transform
+      attributes = attributes.map(transform)
+
+    _.compact(_.unique(attributes))
+
+  # Resolves link to the pages url, removing query.
+  #
+  #   link {String} link to resolve
+  #
+  resolveLink: (link) ->
+
+    {
+      protocol, host, pathname
+    } = url.parse(url.resolve(@url, link))
+
+    "#{protocol}//#{host}#{pathname ? ''}"
 
 module.exports = { HTMLPage }
+

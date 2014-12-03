@@ -3,13 +3,13 @@
 path = require('path')
 
 { logger } = require('webcrawler/lib/logger')
+{ SiteMap } = require('webcrawler/lib/site_map')
 { HTMLPage } = require('webcrawler/lib/html_page')
 
 webcrawler = require('commander')
 webcrawler
 
   .version(require(path.join(__dirname, '..', 'package.json'))['version'])
-  .option '-r, --recursive', 'recursively crawl pages'
 
 webcrawler
   .command('links <url>')
@@ -30,5 +30,17 @@ webcrawler
       assets = page.parseStaticAssets()
       logger.info "Found #{assets.length} assets!"
       logger.info JSON.stringify(assets, null, 2)
+
+webcrawler
+  .command('crawl <url>')
+  .description 'recursively crawls a given url'
+  .action (url) ->
+    logger.info "Initiating crawl on #{url} ..."
+    siteMap = new SiteMap(url).crawl()
+    siteMap.on 'done', (nodes) ->
+      logger.info """
+      Finished crawl.
+      Found #{Object.keys(nodes).length} nodes."""
+      logger.info(JSON.stringify(nodes, null, 2))
 
 webcrawler.parse(process.argv)

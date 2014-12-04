@@ -19,7 +19,7 @@ class SiteMap extends EventEmitter
   # recurses on all parsed links.
   crawl: (target = @host) ->
 
-    if !@nodes[target]? and @isHttp(target) and @isSamehost(target)
+    if !@nodes[target]? and @isHttp(target) and @isSameHost(target)
 
       @nodes[target] = true
       ++@pendingRequests
@@ -45,7 +45,7 @@ class SiteMap extends EventEmitter
 
     @emit('done', @nodes) if @pendingRequests is 0
 
-  isSamehost: (testUrl) ->
+  isSameHost: (testUrl) ->
     url.parse(testUrl).host is url.parse(@host).host
 
   isHttp: (testUrl) ->

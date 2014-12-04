@@ -1,0 +1,25 @@
+{
+  "name": "webcrawler",
+  "version": "0.0.0",
+  "homepage": "https://github.com/LawrenceJones/webcrawler",
+  "authors": [
+    "Lawrence Jones <lmj112@ic.ac.uk>"
+  ],
+  "description": "Draws a dependency diagram of site assets",
+  "keywords": [
+    "node",
+    "webcrawling"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1"
+  }
+}

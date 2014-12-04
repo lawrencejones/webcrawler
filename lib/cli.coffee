@@ -5,6 +5,7 @@ path = require('path')
 { logger } = require('webcrawler/lib/logger')
 { SiteMap } = require('webcrawler/lib/site_map')
 { HTMLPage } = require('webcrawler/lib/html_page')
+{ Web } = require('webcrawler/lib/web')
 
 webcrawler = require('commander')
 webcrawler
@@ -42,5 +43,12 @@ webcrawler
       Finished crawl.
       Found #{Object.keys(nodes).length} nodes."""
       logger.info(JSON.stringify(nodes, null, 2))
+
+webcrawler
+  .command('serve [port]')
+  .description 'starts server on port <port>'
+  .action (port = 3000) ->
+    Web.listen port, (err) ->
+      logger.info "Server started on port #{port}"
 
 webcrawler.parse(process.argv)

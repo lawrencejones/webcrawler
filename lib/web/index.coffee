@@ -11,14 +11,15 @@ configureServer = ->
   @set 'views', path.join(__dirname, 'views')
   @set 'view engine', 'jade'
 
-  @use coffeeMiddleware({
-    src: path.join(__dirname, 'scripts')
-  })
+  @get '/', (req, res) ->
+    res.render('index')
 
   @use express.static(path.join(__dirname, 'public'))
 
-  @get '/', (req, res) ->
-    res.render('index')
+  @use coffeeMiddleware({
+    src: path.join(__dirname, 'scripts')
+    encodeSrc: false
+  })
 
   return @
 

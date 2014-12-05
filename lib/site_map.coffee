@@ -15,22 +15,35 @@ class SiteMap extends EventEmitter
     @nodes = {}
     @pendingRequests = 0
 
+  resolveNodeKey: (key) ->
+    key.replace(/^https/, 'http').replace(/\/$/, '')
+
+  cacheNode: (node) ->
+    key = node.name = @resolveNodeKey(node.name)
+    @nodes[key] = node
+
+  getCacheNode: (key) ->
+    @nodes[@resolveNodeKey(key)]
+
   # Initiates crawling for pages. Starts with the @host target, then
   # recurses on all parsed links.
   crawl: (target = @host) ->
 
-    if !@nodes[target]? and @isHttp(target) and @isSameHost(target)
+    if !@getCacheNode(target) and @isHttp(target) and @isSameHost(target)
 
-      @nodes[target] = true
+      @cacheNode(name: target)
       ++@pendingRequests
 
       HTMLPage.request(url: target).then (page) =>
-        --@pendingRequests
+
         @addPage {
           name: target
+          type: 'page'
           links: page.parseLinks()
           assets: page.parseStaticAssets()
         }
+
+      .finally => --@pendingRequests
 
     return @
 
@@ -38,12 +51,25 @@ class SiteMap extends EventEmitter
 
     logger.debug "Adding page #{pageNode.name} ..."
 
-    @nodes[pageNode.name] = pageNode
+    @cacheNode(pageNode)
     @emit('pageAdded', pageNode)
 
+    # Recurse on all links
     pageNode.links.map(@crawl.bind(@))
 
-    @emit('done', @nodes) if @pendingRequests is 0
+    # Ensure all assets have been accounted
+    pageNode.assets.map(@addAsset.bind(@))
+
+    # For elegance, decrement of pendingRequests occurs in the .finally clause
+    # of request promises. As a result, at this point, pending requests will be
+    # pending + current, and so terminate on 1.
+    @emit('done', @nodes) if @pendingRequests is 1
+
+  addAsset: (asset) ->
+    @cacheNode {
+      name: asset
+      type: 'asset'
+    }
 
   isSameHost: (testUrl) ->
     url.parse(testUrl).host is url.parse(@host).host

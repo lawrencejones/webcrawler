@@ -1,9 +1,31 @@
 head
-  link(href='/lib/bootstrap/dist/css/bootstrap.css' rel='stylesheet')
-  script(src='/lib/jquery/dist/jquery.js')
-  script(src='/lib/bootstrap/dist/js/bootstrap.js')
-  script(src='/app.js')
 
-body
-  h1 Bootstrapped
+  link(href='/lib/bootstrap/dist/css/bootstrap.css' rel='stylesheet')
+  link(href='/graph.css' rel='stylesheet')
+
+  script(src='/lib/underscore/underscore.js')
+  script(src='/lib/jquery/dist/jquery.js')
+  script(src='/lib/angular/angular.js')
+  script(src='/lib/bootstrap/dist/js/bootstrap.js')
+  script(src='/lib/d3/d3.js')
+
+body(ng-app='webcrawler')
+
+  .container(ng-controller='AppCtrl')
+
+    .row
+
+      .col-md-12
+
+        h1 Webcrawler
+
+    .row
+
+      .col-md-12
+
+        dependency-graph(graph-data='gcData' id-key='name' dep-key='links')
+
+  script(src='/app.js')
+  script(src='/site_assets.js')
+  script(src='/graph.js')
 

@@ -1,5 +1,6 @@
-#/usr/bin/env coffee
+#!/usr/bin/env coffee
 
+fs = require('fs')
 path = require('path')
 
 { logger } = require('webcrawler/lib/logger')
@@ -8,6 +9,8 @@ path = require('path')
 { Web } = require('webcrawler/lib/web')
 
 webcrawler = require('commander')
+webcrawler._name = 'webcrawler'
+
 webcrawler
 
   .version(require(path.join(__dirname, '..', 'package.json'))['version'])
@@ -33,16 +36,31 @@ webcrawler
       logger.info JSON.stringify(assets, null, 2)
 
 webcrawler
-  .command('crawl <url>')
+  .command('crawl <url> [jsonFile]')
   .description 'recursively crawls a given url'
-  .action (url) ->
+  .action (url, jsonFile) ->
+
     logger.info "Initiating crawl on #{url} ..."
+
     siteMap = new SiteMap(url).crawl()
+
+    siteMap.on 'pageAdded', ({name}) ->
+      logger.info "+ #{name}"
+
     siteMap.on 'done', (nodes) ->
+
       logger.info """
-      Finished crawl.
-      Found #{Object.keys(nodes).length} nodes."""
-      logger.info(JSON.stringify(nodes, null, 2))
+      Finished crawl. Found #{Object.keys(nodes).length} nodes."""
+
+      jsonOutput = JSON.stringify(nodes, null, 2)
+
+      if jsonFile?
+        logger.info "Writing results in json to #{jsonFile} ..."
+        fs.writeFileSync(path.resolve(jsonFile), jsonOutput, 'utf8')
+        logger.info 'Write complete!'
+
+      else
+        logger.info(jsonOutput)
 
 webcrawler
   .command('serve [port]')

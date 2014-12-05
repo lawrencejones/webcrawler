@@ -86,7 +86,7 @@ class HTMLPage
       protocol, host, pathname
     } = url.parse(url.resolve(@url, link))
 
-    "#{protocol}//#{host}#{pathname ? ''}"
+    "#{protocol}//#{host}#{pathname ? ''}".replace(/\/$/, '')
 
 module.exports = { HTMLPage }
 

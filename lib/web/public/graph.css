@@ -1,4 +1,7 @@
 
+svg {
+  overflow: visible;
+}
 
 path.arc {
   cursor: move;

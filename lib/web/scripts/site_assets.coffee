@@ -1,4 +1,3 @@
-window.SiteAssets =
 class SiteAssets
 
   # Will split the assets into a hierachy of nodes, based on the classifier
@@ -9,7 +8,7 @@ class SiteAssets
   #                               value of the form 'grand.parent.child'
   #
   # Each node is classed into common parent/child classes.
-  @buildHierachy: (assets, classifier = _.identity, SEP = '^') ->
+  @buildHierachy: (assets, classifier = _.identity, SEP = '/') ->
 
     levels = {}
 
@@ -55,3 +54,4 @@ class SiteAssets
       }
 
 angular.module('webcrawler').value('SiteAssets', SiteAssets)
+

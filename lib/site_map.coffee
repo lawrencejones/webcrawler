@@ -29,7 +29,10 @@ class SiteMap extends EventEmitter
   # recurses on all parsed links.
   crawl: (target = @host) ->
 
-    if !@getCacheNode(target) and @isHttp(target) and @isSameHost(target)
+    cachedNode = @getCacheNode(target)
+    cachedNode = null if cachedNode?.type is 'asset'
+
+    if !cachedNode and @isHttp(target) and @isSameHost(target)
 
       @cacheNode(name: target)
       ++@pendingRequests
@@ -66,10 +69,11 @@ class SiteMap extends EventEmitter
     @emit('done', @nodes) if @pendingRequests is 1
 
   addAsset: (asset) ->
-    @cacheNode {
-      name: asset
-      type: 'asset'
-    }
+    if !@getCacheNode(asset)?
+      @cacheNode {
+        name: asset
+        type: 'asset'
+      }
 
   isSameHost: (testUrl) ->
     url.parse(testUrl).host is url.parse(@host).host

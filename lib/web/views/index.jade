@@ -9,7 +9,7 @@ head
   script(src='/lib/bootstrap/dist/js/bootstrap.js')
   script(src='/lib/d3/d3.js')
 
-body(ng-app='webcrawler')
+body(ng-app='webcrawler' ng-controller='AppCtrl')
 
   .container(ng-controller='AppCtrl')
 
@@ -19,11 +19,8 @@ body(ng-app='webcrawler')
 
         h1 Webcrawler
 
-    .row
 
-      .col-md-12
-
-        dependency-graph(graph-data='gcData' id-key='name' dep-key='links' width='2400' height='1800')
+  dependency-graph(graph-data='gcData' id-key='name' dep-key='assets' node-color-rules='assetColorRules' width='1800' height='1800')
 
   script(src='/app.js')
   script(src='/site_assets.js')

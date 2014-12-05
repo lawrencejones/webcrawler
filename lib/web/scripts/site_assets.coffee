@@ -55,3 +55,4 @@ class SiteAssets
       }
 
 angular.module('webcrawler').value('SiteAssets', SiteAssets)
+

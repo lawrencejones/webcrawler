@@ -44,7 +44,7 @@ webcrawler
 
     siteMap = new SiteMap(url).crawl()
 
-    siteMap.on 'pageAdded', ({name}) ->
+    siteMap.on 'nodeAdded', ({name}) ->
       logger.info "+ #{name}"
 
     siteMap.on 'done', (nodes) ->

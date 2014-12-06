@@ -7,71 +7,86 @@ P = require('bluebird')
 { HTMLPage } = require('webcrawler/lib/html_page')
 { logger } = require('webcrawler/lib/logger')
 
+# Provides abstraction around pages in a website. All links are transformed
+# from https to http to enable hashing.
+class SiteMapCache
+
+  constructor: (@key = 'name') ->
+    @cache = {}
+
+  canonicalUrl: (url) ->
+    url.replace(/^https/, 'http').replace(/\/+$/, '')
+
+  set: (node) ->
+    key = node[@key] = @canonicalUrl(node[@key])
+    @cache[key] = node
+
+  get: (key) ->
+    @cache[@canonicalUrl(key)]
+
+  remove: (key) ->
+    delete @cache[@canonicalUrl(key)]
+
 class SiteMap extends EventEmitter
 
   constructor: (@host) ->
-    @nodes = {}
+    @cache = new SiteMapCache('name')
     @pendingRequests = @totalRequests = 0
-
-  resolveNodeKey: (key) ->
-    key.replace(/^https/, 'http').replace(/\/$/, '')
-
-  cacheNode: (node) ->
-    key = node.name = @resolveNodeKey(node.name)
-    @nodes[key] = node
-
-  getCacheNode: (key) ->
-    @nodes[@resolveNodeKey(key)]
 
   # Initiates crawling for pages. Starts with the @host target, then
   # recurses on all parsed links.
+  #
+  # If the given target is listed as an asset, then that listing will be
+  # replaced.
   crawl: (target = @host) ->
 
-    cachedNode = @getCacheNode(target)
+    cachedNode = @cache.get(target)
     cachedNode = null if cachedNode?.type is 'asset'
 
     if !cachedNode and @isHttp(target) and @isSameHost(target)
 
-      @cacheNode(name: target)
+      @cache.set(name: target)
       ++@pendingRequests
       ++@totalRequests
 
-      HTMLPage.request(url: target).then (page) =>
-
-        @addPage {
-          name: target
-          type: 'page'
-          links: page.parseLinks()
-          assets: page.parseStaticAssets()
-        }
-
-      .finally => --@pendingRequests
+      HTMLPage
+        .request(url: target).bind(@)
+        .then @addPage
+        .catch (err) ->
+          console.log err
+          @cache.remove(target)
+        .finally -> --@pendingRequests
 
     return @
 
-  addPage: (pageNode) ->
+  addPage: (page) ->
 
-    logger.debug "Adding page #{pageNode.name} ..."
+    logger.debug "Adding page #{page.url} ..."
 
-    @emit('nodeAdded', @cacheNode(pageNode))
+    pageNode = @cache.set {
+      name: page.url
+      type: 'page'
+      links: page.parseLinks()
+      assets: page.parseStaticAssets()
+    }
+
+    @emit('nodeAdded', pageNode)
 
     # Recurse on all links
     pageNode.links.map(@crawl.bind(@))
 
     # Ensure all assets have been accounted
-    pageNode.assets.map(@addAsset.bind(@))
+    pageNode.assets.map (asset) =>
+      if !@cache.get(asset)?
+        @emit 'nodeAdded', @cache.set {
+          name: asset
+          type: 'asset'
+        }
 
     # For elegance, decrement of pendingRequests occurs in the .finally clause
     # of request promises. As a result, at this point, pending requests will be
     # pending + current, and so terminate on 1.
-    @emit('done', @nodes) if @pendingRequests is 1
-
-  addAsset: (asset) ->
-    if !@getCacheNode(asset)?
-      @emit 'nodeAdded', @cacheNode {
-        name: asset
-        type: 'asset'
-      }
+    @emit('done', @cache.cache) if @pendingRequests is 1
 
   isSameHost: (testUrl) ->
     url.parse(testUrl).host is url.parse(@host).host
@@ -79,5 +94,5 @@ class SiteMap extends EventEmitter
   isHttp: (testUrl) ->
     /https?/.test(url.parse(testUrl).protocol)
 
-module.exports = { SiteMap }
+module.exports = { SiteMap, SiteMapCache }
 

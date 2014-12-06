@@ -1,4 +1,29 @@
-class SiteAssets
+angular.module('webcrawler')
+
+# Formats the data received from the server to filter all non-domain
+# urls and to format the url values into paths.
+.value 'SiteMap', class SiteMap
+
+  constructor: (url, data) ->
+    @domain = new URL(url).host
+    @nodes = _.values(data)
+      .filter (n) => @isDomain(n.name)
+      .map (node) => {
+        name: @getPathname(node.name)
+        assets: @restrictAndKey(node.assets)
+        links: @restrictAndKey(node.links)
+      }
+
+  isDomain: (url) ->
+    new URL(url).hostname is @domain
+
+  getPathname: (url) ->
+    new URL(url).pathname
+
+  restrictAndKey: (urls = []) ->
+    urls.filter(@isDomain.bind(@)).map(@getPathname.bind(@))
+
+.value 'SiteAssets', class SiteAssets
 
   # Will split the assets into a hierachy of nodes, based on the classifier
   # function.
@@ -53,5 +78,4 @@ class SiteAssets
         target: mappedAssets[d]
       }
 
-angular.module('webcrawler').value('SiteAssets', SiteAssets)
 

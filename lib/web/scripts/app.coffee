@@ -1,6 +1,11 @@
 angular.module('webcrawler', [])
 
-.controller 'AppCtrl', ($scope, $log, $http, $timeout, IO, SiteMap) ->
+# Hook up the socket.io connection to localhost
+.service 'IO', -> @__proto__ = io.connect(window.location.origin)
+
+# Controls the web view, implementing logic for coloring of nodes and
+# communication via socket.io to initiate/monitor site crawling.
+.controller 'AppCtrl', ($scope, $timeout, IO, SiteMap) ->
   angular.extend $scope, {
 
     init: ->
@@ -36,6 +41,21 @@ angular.module('webcrawler', [])
 
     .init()
 
+# Wraps around the progressbar.js library to allow directive to trigger
+# creation of progress circles.
+#
+# Example usage.
+#
+#     <progress-circle
+#       size="150"
+#       total="progress.total"
+#       current="progress.current"
+#       circle-params="{ color: 'black', strokeWidth: 3 }">
+#     </progress-circle>
+#
+# Will create a circular progress bar of diameter 50px, with the given
+# circle parameters. progress.total, progress.current are respectively
+# the total to calculate progress on and the count through that total.
 .directive 'progressCircle', ->
 
   restrict: 'E'
@@ -74,26 +94,4 @@ angular.module('webcrawler', [])
       $header.text "#{$scope.current}/#{$scope.total}"
       circle.animate(pct)
 
-.service 'IO', -> @__proto__ = io.connect(window.location.origin)
-
-.value 'SiteMap', class SiteMap
-
-  constructor: (url, data) ->
-    @domain = new URL(url).host
-    @nodes = _.values(data)
-      .filter (n) => @isDomain(n.name)
-      .map (node) => {
-        name: @getPathname(node.name)
-        assets: @restrictAndKey(node.assets)
-        links: @restrictAndKey(node.links)
-      }
-
-  isDomain: (url) ->
-    new URL(url).hostname is @domain
-
-  getPathname: (url) ->
-    new URL(url).pathname
-
-  restrictAndKey: (urls = []) ->
-    urls.filter(@isDomain.bind(@)).map(@getPathname.bind(@))
 

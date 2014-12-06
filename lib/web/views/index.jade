@@ -1,6 +1,7 @@
 head
 
   link(href='/lib/bootstrap/dist/css/bootstrap.css' rel='stylesheet')
+  link(href='/progress.css' rel='stylesheet')
   link(href='/graph.css' rel='stylesheet')
 
   script(src='/lib/underscore/underscore.js')
@@ -8,19 +9,31 @@ head
   script(src='/lib/angular/angular.js')
   script(src='/lib/bootstrap/dist/js/bootstrap.js')
   script(src='/lib/d3/d3.js')
+  script(src='/lib/progressbar.js/dist/progressbar.js')
+  script(src='/socket.io/socket.io.js')
 
 body(ng-app='webcrawler' ng-controller='AppCtrl')
 
-  .container(ng-controller='AppCtrl')
+  .container
 
     .row
 
       .col-md-12
 
         h1 Webcrawler
+        .input-group
+          input.form-control(type='text' ng-model='input.host' placeholder='http://gocardless.com')
+          span.input-group-btn
+            button.btn.btn-default(type='button' ng-click='crawlWebsite(input.host)')
+              | Go
+
+    .row(ng-show='!siteData')
+      .col-md-12
+        .progress-container-middle
+          progress-circle(total='progress.total' current='progress.current' size='150' ng-show='progress.total > 0' ng-class="{'fade-out': (progress.total > 0) && (progress.current == progress.total)}")
 
 
-  dependency-graph(graph-data='gcData' id-key='name' dep-key='assets' node-color-rules='assetColorRules' width='1800' height='1800')
+  dependency-graph(ng-show='siteData' graph-data='siteData' id-key='name' dep-key='assets' node-color-rules='assetColorRules' width='1800' height='1800')
 
   script(src='/app.js')
   script(src='/site_assets.js')

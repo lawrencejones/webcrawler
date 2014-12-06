@@ -52,15 +52,14 @@ webcrawler
       logger.info """
       Finished crawl. Found #{Object.keys(nodes).length} nodes."""
 
-      jsonOutput = JSON.stringify(nodes, null, 2)
-
       if jsonFile?
         logger.info "Writing results in json to #{jsonFile} ..."
+        jsonOutput = JSON.stringify(nodes, null, 2)
         fs.writeFileSync(path.resolve(jsonFile), jsonOutput, 'utf8')
         logger.info 'Write complete!'
 
       else
-        logger.info(jsonOutput)
+        logger.info(nodes)
 
 webcrawler
   .command('serve [port]')

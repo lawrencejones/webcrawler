@@ -9,11 +9,9 @@ P = require('bluebird')
 
 class SiteMap extends EventEmitter
 
-  @REQUEST_LIMIT: 5
-
   constructor: (@host) ->
     @nodes = {}
-    @pendingRequests = 0
+    @pendingRequests = @totalRequests = 0
 
   resolveNodeKey: (key) ->
     key.replace(/^https/, 'http').replace(/\/$/, '')
@@ -36,6 +34,7 @@ class SiteMap extends EventEmitter
 
       @cacheNode(name: target)
       ++@pendingRequests
+      ++@totalRequests
 
       HTMLPage.request(url: target).then (page) =>
 
@@ -54,8 +53,7 @@ class SiteMap extends EventEmitter
 
     logger.debug "Adding page #{pageNode.name} ..."
 
-    @cacheNode(pageNode)
-    @emit('pageAdded', pageNode)
+    @emit('nodeAdded', @cacheNode(pageNode))
 
     # Recurse on all links
     pageNode.links.map(@crawl.bind(@))
@@ -70,7 +68,7 @@ class SiteMap extends EventEmitter
 
   addAsset: (asset) ->
     if !@getCacheNode(asset)?
-      @cacheNode {
+      @emit 'nodeAdded', @cacheNode {
         name: asset
         type: 'asset'
       }

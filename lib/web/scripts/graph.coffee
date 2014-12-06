@@ -9,12 +9,8 @@ angular.module('webcrawler')
 
   }
 
-  constructor: (dim) ->
-
-    @width = dim.width
-    @height = dim.height
-
-    @rotate = dim.rotate ? 0
+  constructor: ({ @width, @height, @rotate }) ->
+    @rotate ?= 0
 
 .factory 'DependencyGraph', (SiteAssets, Dimensions) ->
 

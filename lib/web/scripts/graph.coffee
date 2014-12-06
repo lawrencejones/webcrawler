@@ -1,5 +1,7 @@
 angular.module('webcrawler')
 
+# Abstraction for a collection of graph dimensions. {rx/ry} represent
+# radial dimensions, and are calculated on the fly from {width/height}.
 .value 'Dimensions', class Dimensions
 
   Object.defineProperties Dimensions.prototype, {
@@ -12,6 +14,9 @@ angular.module('webcrawler')
   constructor: ({ @width, @height, @rotate }) ->
     @rotate ?= 0
 
+# Implements logic to draw the dependency graph, using d3 helpers. Requires
+# data that conforms to certain constraints - specifically that d3 cluster
+# and bundle can identify links between different nodes.
 .factory 'DependencyGraph', (SiteAssets, Dimensions) ->
 
   class DependencyGraph
@@ -34,12 +39,25 @@ angular.module('webcrawler')
       @createDiv($graph)
       @createSvg()
 
+    # Cluster all data into groups. Allows for correct ordering of nodes around
+    # the graph, and optimises display of dependency splines.
     createCluster: ->
       @cluster = d3.layout.cluster()
         .size([ 360, @dim.ry - 300 ])
         .sort (a, b) ->
           d3.ascending(a.name, b.name)
 
+    # Draws radial line that forms the edge of the dependency graph, along which
+    # nodes shall be placed.
+    drawLine: ->
+      @line = d3.svg.line.radial()
+        .interpolate('bundle')
+        .tension(.85)
+        .radius (d) -> d?.y ? 0
+        .angle (d) -> (d?.x ? 0) / 180 * Math.PI
+
+    # Applies necessary styles to the $parentElement that contains the graph,
+    # inserting a new div that will become the svg container.
     createDiv: ($parentElement) ->
 
       # Center parent element
@@ -58,6 +76,8 @@ angular.module('webcrawler')
         .style('position', 'absolute')
         .style('-webkit-backface-visibility', 'hidden')
 
+    # Appends an svg element to the graph div container, which will be used to
+    # draw the graph contents.
     createSvg: ->
 
       @svg = @div.append('svg:svg')
@@ -66,6 +86,7 @@ angular.module('webcrawler')
         .append('svg:g')
         .attr('transform', "translate(#{@dim.rx},#{@dim.ry})")
 
+      # Circumference of graph
       @svg.append('svg:path')
         .attr('class', 'arc')
         .attr('d',
@@ -76,13 +97,6 @@ angular.module('webcrawler')
             .endAngle(2 * Math.PI))
 
       return @svg
-
-    drawLine: ->
-      @line = d3.svg.line.radial()
-        .interpolate('bundle')
-        .tension(.85)
-        .radius (d) -> d?.y ? 0
-        .angle (d) -> (d?.x ? 0) / 180 * Math.PI
 
     # Will draw nodes and the dependency links into the graph.
     #
@@ -105,12 +119,14 @@ angular.module('webcrawler')
       links = SiteAssets.dependencies(data, idKey, depKey)
       splines = @bundle(links)
 
+      # Draw all links between nodes
       path = @svg.selectAll('path.link')
         .data(links)
         .enter().append('svg:path')
         .attr('class', (d) -> "link source-#{d.source.key} target-#{d.target.key}")
         .attr('d', (d, i) => @line(splines[i]))
 
+      # Format all nodes as a function of their data
       @svg.selectAll('g.node')
         .data(nodes.filter (n) -> !n.children)
         .enter().append('svg:g')
@@ -125,6 +141,30 @@ angular.module('webcrawler')
         .text(_.property('name'))
         .style('fill', nodeColorRules)
 
+# Wrap the graph in a directive.
+#
+# Example usage.
+#
+#     <dependency-graph
+#       graph-data="siteData"
+#       id-key="name"
+#       dep-key="assets"
+#       node-color-rules="nodeColorRules"
+#       width="1800"
+#       height="1800">
+#     </dependency-graph>
+#
+# The above would create a dep. graph on siteData, using 'name' as a key into
+# each node that would yield a unique value. The dependencies for each node
+# are calculated as links to every node whose key appears in the node['assets']
+# array.
+#
+# nodeColorRules allow custom coloring of each label around the graph as a
+# function of the data point. For example, a function that yields 'red' or
+# 'blue' dependent on if the nodes 'name' key ends in .js or .css.
+#
+# Width and height values are respected as set dimensions. d3 only allows these
+# to be drawn once, so no binding on dynamic values.
 .directive 'dependencyGraph', (DependencyGraph) -> {
 
   restrict: 'E'

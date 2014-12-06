@@ -1,7 +1,11 @@
 angular.module('webcrawler', [])
 
-.controller 'AppCtrl', ($scope, $log, $http, SiteMap) ->
+.controller 'AppCtrl', ($scope, $log, $http, $timeout, IO, SiteMap) ->
   angular.extend $scope, {
+
+    init: ->
+      $scope.progress = { total: 0, current: 0 }
+      $scope.siteData = null
 
     assetColorRules: (d) ->
       switch d.name.match(/\.([^.]+)$/)?[1]
@@ -11,17 +15,71 @@ angular.module('webcrawler', [])
         else 'black'
 
     crawlWebsite: (domain) ->
-      $http.get('/gocardless.json').success (data) ->
-        $log.info 'Received data'
-        $scope.gcData = new SiteMap('gocardless.com', data).nodes
+
+      $scope.init()
+
+      IO.emit 'crawl', { url: domain }
+      IO.on 'nodeAdded', ({ url, total, pending }) ->
+        $scope.progress = {
+          total, current: total - pending
+        }
+        $scope.$apply()
+
+      IO.on 'done', (nodes) ->
+        $scope.progress.current = $scope.progress.total
+        $scope.$apply()
+        $timeout ->
+          $scope.siteData = new SiteMap(domain, nodes).nodes
+        , 1250  # wait for progress animation
 
   }
 
-    .crawlWebsite('http://gocardless.com')
+    .init()
+
+.directive 'progressCircle', ->
+
+  restrict: 'E'
+  replace: true
+
+  template: """
+  <div class="progress-circle">
+  </div>"""
+
+  scope: {
+    total: '='
+    current: '='
+  }
+
+  link: ($scope, $cont, attr) ->
+
+    $cont.css {
+      height: "#{attr.size}px"
+      width: "#{attr.size}px"
+    }
+
+    circleParams = angular.extend {
+      color: '#1f77b4'
+      trailColor: '#ddd'
+      strokeWidth: 2
+    }, $scope.$eval(attr.circleParams)
+
+    circle = new ProgressBar.Circle($cont[0], circleParams)
+
+    $header = $("<header class=\"progress-circle-text\"></header>")
+    $header.css(color: circleParams.color)
+    $cont.append($header)
+
+    $scope.$watch (-> $scope.current / $scope.total), (pct) ->
+      pct = 0 if _.isNaN(pct)
+      $header.text "#{$scope.current}/#{$scope.total}"
+      circle.animate(pct)
+
+.service 'IO', -> @__proto__ = io.connect(window.location.origin)
 
 .value 'SiteMap', class SiteMap
 
-  constructor: (@domain, data) ->
+  constructor: (url, data) ->
+    @domain = new URL(url).host
     @nodes = _.values(data)
       .filter (n) => @isDomain(n.name)
       .map (node) => {

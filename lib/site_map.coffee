@@ -52,9 +52,7 @@ class SiteMap extends EventEmitter
       HTMLPage
         .request(url: target).bind(@)
         .then @addPage
-        .catch (err) ->
-          console.log err
-          @cache.remove(target)
+        .catch (err) -> @cache.remove(target)
         .finally -> --@pendingRequests
 
     return @

@@ -49,7 +49,8 @@ angular.module('webcrawler')
         if name.length > 0  # is not root
           node.parent = find(name.substring(0, i = name.lastIndexOf(SEP)))
           node.parent.children.push(node)
-          node.key = name.substring(i + 1)
+          node.key = node.name
+            .replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, '-')
 
       return node
 

@@ -5,7 +5,8 @@
   "main": "lib/webcrawler.coffee",
   "scripts": {
     "test": "make test",
-    "prepublish": "make install"
+    "prepublish": "make install",
+    "postinstall": "make install"
   },
   "bin": {
     "webcrawler": "bin/webcrawler"

@@ -5,7 +5,11 @@
   "main": "lib/webcrawler.coffee",
   "scripts": {
     "test": "make test",
-    "prepublish": "make prepublish"
+    "prepublish": "make install",
+    "postinstall": "make install"
+  },
+  "bin": {
+    "webcrawler": "bin/webcrawler"
   },
   "repository": {
     "type": "git",
@@ -29,6 +33,7 @@
     "bower": "^1.3.12",
     "chai": "^1.10.0",
     "chai-as-promised": "^4.1.1",
+    "cheerio": "^0.18.0",
     "coffee-middleware": "^0.2.1",
     "coffee-script": "^1.8.0",
     "commander": "^2.5.0",
@@ -42,6 +47,7 @@
     "sinon": "^1.12.1",
     "sinon-chai": "^2.6.0",
     "socket.io": "^1.2.1",
+    "underscore": "^1.7.0",
     "winston": "^0.8.3"
   }
 }

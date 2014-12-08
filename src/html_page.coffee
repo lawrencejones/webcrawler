@@ -4,7 +4,7 @@ url = require('url')
 request = P.promisify(require('request'))
 cheerio = require('cheerio')
 
-{ logger } = require('webcrawler/lib/logger')
+{ logger } = require('webcrawler/src/logger')
 
 class HTMLPage
 

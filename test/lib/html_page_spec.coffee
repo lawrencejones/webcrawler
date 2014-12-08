@@ -1,6 +1,6 @@
 url = require('url')
 
-{ HTMLPage } = require('webcrawler/lib/html_page')
+{ HTMLPage } = require('webcrawler/src/html_page')
 
 loadMock = _.memoize (fileName) ->
   fs.readFileSync(path.join(__dirname, '..', 'mocks', fileName), 'utf8')

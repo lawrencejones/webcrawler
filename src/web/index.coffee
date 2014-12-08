@@ -5,8 +5,8 @@ _ = require('underscore')
 express = require('express')
 coffeeMiddleware = require('coffee-middleware')
 
-{ logger } = require('webcrawler/lib/logger')
-{ SiteMap } = require('webcrawler/lib/site_map')
+{ logger } = require('webcrawler/src/logger')
+{ SiteMap } = require('webcrawler/src/site_map')
 
 app = express()
 server = require('http').Server(app)

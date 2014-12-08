@@ -3,10 +3,10 @@
 fs = require('fs')
 path = require('path')
 
-{ logger } = require('webcrawler/lib/logger')
-{ SiteMap } = require('webcrawler/lib/site_map')
-{ HTMLPage } = require('webcrawler/lib/html_page')
-{ Web } = require('webcrawler/lib/web')
+{ logger } = require('webcrawler/src/logger')
+{ SiteMap } = require('webcrawler/src/site_map')
+{ HTMLPage } = require('webcrawler/src/html_page')
+{ Web } = require('webcrawler/src/web')
 
 webcrawler = require('commander')
 webcrawler._name = 'webcrawler'

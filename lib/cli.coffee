@@ -69,3 +69,4 @@ webcrawler
       logger.info "Server started on port #{port}"
 
 webcrawler.parse(process.argv)
+webcrawler.outputHelp() if process.argv.length < 3

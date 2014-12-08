@@ -1,6 +1,6 @@
 # webcrawler
 
-![Web Output, Dependency Graph](/lib/web/public/web_screen.png "Screenshot of Web Interface")
+![Web Output, Dependency Graph](/src/web/public/web_screen.png "Screenshot of Web Interface")
 
 This is a very simple tool designed to crawl websites, producing data on what each page links to and
 what static assets they depend on.

@@ -44,6 +44,11 @@ URL and the results will be graphed onscreen.
 Log levels are set via the environment variable `LOG_LEVEL`. To run with debug output, try
 `LOG_LEVEL=debug ./webcrawler <cmd>...`.
 
+# Acknowledgements
+
+Much of the d3 code was adapted from the flare Hierarchical Edge Bundling demo, found
+[here](http://bl.ocks.org/mbostock/7607999), though now wrapped in an angular directive.
+
 # Contact
 
 Lawrence Jones - lmj112@ic.ac.uk

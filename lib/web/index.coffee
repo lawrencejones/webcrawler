@@ -36,6 +36,8 @@ configureServer = ->
 
 configureSocket = ->
 
+  cache = {}
+
   @on 'connection', (socket) ->
 
     REMOTE = socket.request.connection.remoteAddress
@@ -44,6 +46,9 @@ configureSocket = ->
     socket.on 'crawl', ({ url }) ->
 
       logger.info "Crawl request from #{REMOTE}"
+
+      if cache[url]?
+        return socket.emit('done', cache[url])
 
       sm = new SiteMap(url).crawl()
 
@@ -54,7 +59,9 @@ configureSocket = ->
           page: page
         }
 
-      sm.on 'done', socket.emit.bind(socket, 'done')
+      #sm.on 'done', socket.emit.bind(socket, 'done')
+      sm.on 'done', (nodes) ->
+        socket.emit('done', cache[url] = nodes)
 
 module.exports = {
   Web: configureServer.call(app)

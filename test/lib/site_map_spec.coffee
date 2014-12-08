@@ -1,4 +1,4 @@
-{ SiteMap, SiteMapCache } = require('webcrawler/lib/site_map')
+{ SiteMap, SiteMapCache } = require('webcrawler/src/site_map')
 
 describe 'SiteMap', ->
 

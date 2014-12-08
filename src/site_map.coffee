@@ -4,8 +4,8 @@ url = require('url')
 _ = require('underscore')
 P = require('bluebird')
 
-{ HTMLPage } = require('webcrawler/lib/html_page')
-{ logger } = require('webcrawler/lib/logger')
+{ HTMLPage } = require('webcrawler/src/html_page')
+{ logger } = require('webcrawler/src/logger')
 
 # Provides abstraction around pages in a website. All links are transformed
 # from https to http to enable hashing.

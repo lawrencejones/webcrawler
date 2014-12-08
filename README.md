@@ -19,12 +19,9 @@ Ensure your machine has node installed, along with node's package manager npm.
 Once node & npm are installed, clone this repo and run `npm install` from the project root. This will
 install all the required dependencies, and run tests to ensure everything is configured correctly.
 
-To run the binary, you also need coffee-script to be installed globally. Running `npm install -g coffee-script`
-will complete this step.
-
 ## Usage
 
-Once installed, you can run `webcrawler` by executing `./webcrawler` from the project root. A usage
+Once installed, you can run `webcrawler` by executing `./bin/webcrawler` from the project root. A usage
 script will be printed if you run `webcrawler` with no arguments.
 
 ### `crawl <target> <jsonFile>`
@@ -42,7 +39,7 @@ URL and the results will be graphed onscreen.
 # Development
 
 Log levels are set via the environment variable `LOG_LEVEL`. To run with debug output, try
-`LOG_LEVEL=debug ./webcrawler <cmd>...`.
+`LOG_LEVEL=debug ./bin/webcrawler <cmd>...`.
 
 # Acknowledgements
 

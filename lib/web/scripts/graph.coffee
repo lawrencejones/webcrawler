@@ -84,6 +84,22 @@ angular.module('webcrawler')
           @div.style('-webkit-transform', null)
           @rotateSvg(rotate)
 
+        # Add classes to appropriate paths between source/target nodes.
+        nodeMouseover: (d) ->
+
+          @svg.selectAll("path.link.target-#{d.key}")
+            .classed('target', true)
+            .each(@updateNodes.call(@, 'source', true))
+
+          @svg.selectAll("path.link.source-#{d.key}")
+            .classed('target', true)
+            .each(@updateNodes.call(@, 'target', true))
+
+        # Remove all target/source classes
+        nodeMouseout: (d) ->
+          @svg.selectAll('path.link.source').classed('source', false)
+          @svg.selectAll('path.link.target').classed('target', false)
+
       }
 
     constructor: ($graph, options) ->
@@ -199,6 +215,14 @@ angular.module('webcrawler')
         .attr 'transform', (d) ->
           if (d.x + rotate) % 360 < 180 then null else 'rotate(180)'
 
+    # Returns a function that can be used with d3 to configure a nodes class
+    # value.
+    updateNodes: (name, value) ->
+      svg = @svg
+      (d) ->
+        if value then @parentNode.appendChild(@)
+        svg.select("#node-#{d[name].key}").classed(name, value)
+
     # Will draw nodes and the dependency links into the graph.
     #
     # options {Object} {
@@ -241,6 +265,8 @@ angular.module('webcrawler')
         .attr('transform', (d) -> if d.x < 180 then null else 'rotate(180)')
         .text(_.property('name'))
         .style('fill', nodeColorRules)
+        .on('mouseover', @nodeMouseover.bind(@))
+        .on('mouseout', @nodeMouseout.bind(@))
 
 # Wrap the graph in a directive.
 #

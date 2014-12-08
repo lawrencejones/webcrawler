@@ -64,8 +64,12 @@ describe 'HTMLPage', ->
           .to.equal "#{@page.url}/relative_page.html"
 
       it 'should leave absolute urls untouched', ->
-        expect(@page.resolveLink('http://google.com/'))
-          .to.equal 'http://google.com/'
+        expect(@page.resolveLink('http://google.com'))
+          .to.equal 'http://google.com'
+
+      it 'should remove trailing slash', ->
+        expect(@page.resolveLink('http://google.com'))
+          .to.equal 'http://google.com'
 
     describe '#parseStaticAssets', ->
 
@@ -97,7 +101,6 @@ describe 'HTMLPage', ->
             url: @mockUrl
             body: pageWithHead('<link href="/css/app.css">')
           }), 'css/app.css'
-
 
     describe '#parseLinks', ->
 

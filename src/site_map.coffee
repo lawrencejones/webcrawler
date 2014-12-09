@@ -29,7 +29,7 @@ class SiteMapCache
 
 class SiteMap extends EventEmitter
 
-  constructor: (@host) ->
+  constructor: (@host = '') ->
     @cache = new SiteMapCache('name')
     @pendingRequests = @totalRequests = 0
 

@@ -19,8 +19,14 @@ angular.module('webcrawler', [])
         when 'jpg', 'png' then 'blue'
         else 'black'
 
+    isValidHost: (host) ->
+      try
+        new URL(host)
+        return true
+
     crawlWebsite: (domain) ->
 
+      return unless $scope.isValidHost()
       $scope.init()
 
       IO.emit 'crawl', { url: domain }

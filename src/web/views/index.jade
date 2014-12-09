@@ -24,7 +24,7 @@ body(ng-app='webcrawler' ng-controller='AppCtrl')
         .input-group
           input.form-control(type='text' ng-model='input.host' placeholder='http://gocardless.com')
           span.input-group-btn
-            button.btn.btn-default(type='button' ng-click='crawlWebsite(input.host)')
+            button.btn.btn-default(type='button' ng-click='crawlWebsite(input.host)' ng-disabled='!isValidHost(input.host)')
               | Go
 
     .row(ng-show='!siteData')

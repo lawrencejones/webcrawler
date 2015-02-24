@@ -2,17 +2,18 @@
 
 describe 'SiteMap', ->
 
-  testHost = 'http://gocardless.com'
+  testUrl = 'http://gocardless.com'
+  testDomain = 'gocardless.com'
 
-  beforeEach -> @map = new SiteMap(testHost)
+  beforeEach -> @map = new SiteMap(testUrl)
 
   it 'should exist', ->
     expect(SiteMap).to.exist
 
   describe 'constructor', ->
 
-    it 'should set the host value', ->
-      expect(@map.host).to.equal(testHost)
+    it 'should set the domain value', ->
+      expect(@map.siteDomain).to.equal(testDomain)
 
     it 'should create new cache', ->
       expect(@map.cache).to.be.ok
@@ -25,16 +26,15 @@ describe 'SiteMap', ->
 
   describe 'method', ->
 
-    describe '#isSameHost', ->
+    describe '#isSameDomain', ->
 
       it 'should equate different paths', ->
-        expect(@map.isSameHost("#{testHost}/path"))
+        expect(@map.isSameDomain("#{testUrl}/path"))
           .to.be.true
 
       it 'should not equate different domains', ->
-        expect(@map.isSameHost('http://different-host.entirely'))
+        expect(@map.isSameDomain('http://different-host.entirely'))
           .to.be.false
-
 
     describe '#isHttp', ->
 
@@ -53,7 +53,7 @@ describe 'SiteMap', ->
     describe '#addPage', ->
 
       mockPage = {
-        url: "#{testHost}/page"
+        url: "#{testUrl}/page"
         parseLinks: -> []
         parseStaticAssets: -> []
       }

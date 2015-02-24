@@ -1,4 +1,4 @@
-url = require('url')
+URL = require('url')
 { EventEmitter } = require('events')
 
 _ = require('underscore')
@@ -29,7 +29,8 @@ class SiteMapCache
 
 class SiteMap extends EventEmitter
 
-  constructor: (@host = '') ->
+  constructor: (@entryUrl = '') ->
+    @siteDomain = URL.parse(entryUrl).hostname
     @cache = new SiteMapCache('name')
     @pendingRequests = @totalRequests = 0
 
@@ -43,7 +44,7 @@ class SiteMap extends EventEmitter
     cachedNode = @cache.get(target)
     cachedNode = null if cachedNode?.type is 'asset'
 
-    if !cachedNode and @isHttp(target) and @isSameHost(target)
+    if !cachedNode and @isHttp(target) and @isSameDomain(target)
 
       @cache.set(name: target)
       ++@pendingRequests
@@ -86,11 +87,12 @@ class SiteMap extends EventEmitter
     # pending + current, and so terminate on 1.
     @emit('done', @cache.cache) if @pendingRequests is 1
 
-  isSameHost: (testUrl) ->
-    url.parse(testUrl).host is url.parse(@host).host
+  isSameDomain: (testUrl) ->
+    URL.parse(testUrl).hostname is @siteDomain
 
   isHttp: (testUrl) ->
-    /https?/.test(url.parse(testUrl).protocol)
+    protocol = URL.parse(testUrl).protocol
+    /^https?/.test(protocol)
 
 module.exports = { SiteMap, SiteMapCache }
 

@@ -26,7 +26,7 @@ angular.module('webcrawler', [])
 
     crawlWebsite: (domain) ->
 
-      return unless $scope.isValidHost()
+      return unless $scope.isValidHost(domain)
       $scope.init()
 
       IO.emit 'crawl', { url: domain }

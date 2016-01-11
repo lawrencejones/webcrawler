@@ -1,11 +1,11 @@
 {
   "name": "webcrawler",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Crawls given domains to provide a site map of static assets",
   "main": "lib/webcrawler.coffee",
   "scripts": {
     "test": "mocha ./test/spec_helper.coffee --recursive ./test --compilers coffee:coffee-script/register --ui bdd --reporter spec --colors",
-		"integ": "INTEG=true npm test",
+    "integ": "INTEG=true npm test",
     "prepublish": "bower install"
   },
   "bin": {

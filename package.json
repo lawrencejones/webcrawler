@@ -4,9 +4,10 @@
   "description": "Crawls given domains to provide a site map of static assets",
   "main": "lib/webcrawler.coffee",
   "scripts": {
-    "test": "make test",
-    "prepublish": "make install",
-    "postinstall": "make install"
+    "test": "mocha ./test/spec_helper.coffee --recursive ./test --compilers coffee:coffee-script/register --ui bdd --reporter spec --colors",
+		"integ": "INTEG=true npm test",
+    "prepublish": "bower install",
+    "postinstall": "bower install"
   },
   "bin": {
     "webcrawler": "bin/webcrawler"

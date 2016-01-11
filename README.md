@@ -1,4 +1,4 @@
-# webcrawler
+# webcrawler [![Build Status](https://travis-ci.org/lawrencejones/webcrawler.svg?branch=master)](https://travis-ci.org/lawrencejones/webcrawler)
 
 ![Web Output, Dependency Graph](/src/web/public/web_screen.png "Screenshot of Web Interface")
 

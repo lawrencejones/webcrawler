@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha ./test/spec_helper.coffee --recursive ./test --compilers coffee:coffee-script/register --ui bdd --reporter spec --colors",
     "integ": "INTEG=true npm test",
-    "prepublish": "bower install"
+    "prepublish": "ln -fhs .. ./node_modules/webcrawler && bower install"
   },
   "bin": {
     "webcrawler": "bin/webcrawler"
@@ -42,7 +42,7 @@
     "jade": "^1.8.1",
     "jquery": "^2.1.1",
     "jsdom": "^1.3.1",
-    "mocha": "^2.0.1",
+    "mocha": "^2.3.4",
     "request": "^2.49.0",
     "sinon": "^1.12.1",
     "sinon-chai": "^2.6.0",

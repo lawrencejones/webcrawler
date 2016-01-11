@@ -30,7 +30,7 @@ class SiteMapCache
 class SiteMap extends EventEmitter
 
   constructor: (@entryUrl = '') ->
-    @siteDomain = URL.parse(entryUrl).hostname
+    @siteDomain = URL.parse(@entryUrl).hostname
     @cache = new SiteMapCache('name')
     @pendingRequests = @totalRequests = 0
 

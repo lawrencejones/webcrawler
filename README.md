@@ -48,4 +48,4 @@ Much of the d3 code was adapted from the flare Hierarchical Edge Bundling demo, 
 
 # Contact
 
-Lawrence Jones - lmj112@ic.ac.uk
+Lawrence Jones - lawrjone@gmail.com

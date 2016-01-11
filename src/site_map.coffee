@@ -34,12 +34,12 @@ class SiteMap extends EventEmitter
     @cache = new SiteMapCache('name')
     @pendingRequests = @totalRequests = 0
 
-  # Initiates crawling for pages. Starts with the @host target, then
+  # Initiates crawling for pages. Starts with the @entryUrl target, then
   # recurses on all parsed links.
   #
   # If the given target is listed as an asset, then that listing will be
   # replaced.
-  crawl: (target = @host) ->
+  crawl: (target = @entryUrl) ->
 
     cachedNode = @cache.get(target)
     cachedNode = null if cachedNode?.type is 'asset'

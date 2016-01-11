@@ -6,8 +6,7 @@
   "scripts": {
     "test": "mocha ./test/spec_helper.coffee --recursive ./test --compilers coffee:coffee-script/register --ui bdd --reporter spec --colors",
 		"integ": "INTEG=true npm test",
-    "prepublish": "bower install",
-    "postinstall": "bower install"
+    "prepublish": "bower install"
   },
   "bin": {
     "webcrawler": "bin/webcrawler"

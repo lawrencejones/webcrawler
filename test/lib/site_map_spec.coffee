@@ -26,6 +26,18 @@ describe 'SiteMap', ->
 
   describe 'method', ->
 
+    describe '#crawl', ->
+
+      beforeEach ->
+        @cacheGetStub = sinon.stub(@map.cache, 'get').returns(true)  # cache hit
+
+      it 'defaults to `entryUrl` when no target is supplied', ->
+        @map.crawl()
+        expect(@cacheGetStub)
+          .to.have.been.calledOnce
+        expect(@cacheGetStub)
+          .to.have.been.calledWith(@map.entryUrl)
+
     describe '#isSameDomain', ->
 
       it 'should equate different paths', ->
